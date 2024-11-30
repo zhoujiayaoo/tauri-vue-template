@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { invoke } from '@tauri-apps/api/tauri'
+import { invoke } from '@tauri-apps/api/core'
 import { createDiscreteApi } from "naive-ui"
 const { message } = createDiscreteApi(["message"])
 

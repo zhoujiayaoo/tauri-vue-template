@@ -1,7 +1,5 @@
-#![cfg_attr(
-    all(not(debug_assertions), target_os = "windows"),
-    windows_subsystem = "windows"
-)]
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+
 
 mod confit_utils;
 mod jar_utils;
@@ -9,8 +7,12 @@ mod ssh_utils;
 mod common_service;
 
 use serde_json::Number;
-use tauri::api::shell;
-use tauri::{CustomMenuItem, Manager, Menu, Submenu};
+use tauri_plugin_shell::ShellExt;
+// use tauri::{CustomMenuItem, Manager, Menu, Submenu};
+use tauri::{
+    menu::{MenuBuilder, MenuItemBuilder}, Manager,
+};
+
 use ssh2::Session;
 use std::fs::File;
 use std::net::TcpStream;
@@ -128,38 +130,43 @@ fn start_hot_update_handle(className: &str, javaProcessPid: &str) -> Result<Stri
 
 
 
+
 fn main() {
     let ctx = tauri::generate_context!();
     tauri::Builder::default()
+        .plugin(tauri_plugin_shell::init())
         .invoke_handler(tauri::generate_handler![edit_save_handle, match_class_handle, read_config_event, start_hot_update_handle, get_java_process_list_handle])
-        .menu(
-            tauri::Menu::os_default("Tauri Vue Template").add_submenu(Submenu::new(
-                "Help",
-                Menu::with_items([CustomMenuItem::new(
-                    "Online Documentation",
-                    "Online Documentation",
-                )
-                .into()]),
-            )),
-        )
-        .on_menu_event(|event| {
-            let event_name = event.menu_item_id();
-            match event_name {
-                "Online Documentation" => {
-                    let url = "https://github.com/Uninen/tauri-vue-template".to_string();
-                    shell::open(&event.window().shell_scope(), url, None).unwrap();
-                }
-                _ => {}
-            }
-        })
+        // .menu(
+        //     tauri::Menu::os_default("Tauri Vue Template").add_submenu(Submenu::new(
+        //         "Help",
+        //         Menu::with_items([CustomMenuItem::new(
+        //             "Online Documentation",
+        //             "Online Documentation",
+        //         )
+        //         .into()]),
+        //     )),
+        // )
+        // .on_menu_event(|event| {
+        //     let event_name = event.menu_item_id();
+        //     match event_name {
+        //         "Online Documentation" => {
+        //             let url = "https://github.com/Uninen/tauri-vue-template".to_string();
+        //             shell::open(&event.window().shell_scope(), url, None).unwrap();
+        //         }
+        //         _ => {}
+        //     }
+        // })
         .setup(|_app| {
             #[cfg(debug_assertions)]
             {
-                let main_window = _app.get_window("main").unwrap();
+                let main_window = _app.get_webview_window("main").unwrap();
+                // let main_window = _app
                 main_window.open_devtools();
             }
             Ok(())
         })
         .run(ctx)
         .expect("error while running tauri application");
+
+        // tauri_app_lib::run()
 }
