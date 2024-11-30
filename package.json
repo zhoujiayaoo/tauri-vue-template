@@ -55,6 +55,7 @@
     "vite-plugin-top-level-await": "1.4.4",
     "vite-plugin-vue-devtools": "7.6.4",
     "vitest": "2.1.5",
-    "vue-tsc": "2.1.10"
+    "vue-tsc": "2.1.10",
+    "naive-ui": "^2.35.0"
   }
 }

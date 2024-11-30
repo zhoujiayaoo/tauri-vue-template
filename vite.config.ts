@@ -7,6 +7,8 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import topLevelAwait from 'vite-plugin-top-level-await'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import { version as pkgVersion } from './package.json'
+import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
+
 
 const HOST = process.env.TAURI_DEV_HOST
 const PLATFORM = process.env.TAURI_PLATFORM
@@ -18,8 +20,6 @@ if (process.env.NODE_ENV === 'production') {
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    topLevelAwait(),
-    nodePolyfills(),
     vue(),
     vueDevTools(),
     AutoImport({
@@ -30,12 +30,21 @@ export default defineConfig({
         {
           '@/store': ['useStore'],
         },
+        {
+          'naive-ui': [
+            'useDialog',
+            'useMessage',
+            'useNotification',
+            'useLoadingBar'
+          ]
+        }
       ],
       dts: 'auto-imports.d.ts',
       vueTemplate: true,
     }),
     Components({
       dts: 'components.d.ts',
+      resolvers: [NaiveUiResolver()]
     }),
   ],
   resolve: {
